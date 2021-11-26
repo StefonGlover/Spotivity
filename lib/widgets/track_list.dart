@@ -24,7 +24,10 @@ class TrackList extends StatelessWidget {
     Duration duration = Duration(milliseconds: track.durationMs as int);
     return InkWell(
       onTap: () {
-        Get.find<SpotifyController>().playMusic(track);
+        (track.previewUrl != null)
+            ? Get.find<SpotifyController>().playMusic(track)
+            : Get.defaultDialog(
+                title: 'Sorry', middleText: 'Preview not available');
       },
       child: SizedBox(
         height: 50,
