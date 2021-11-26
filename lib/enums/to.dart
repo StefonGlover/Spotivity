@@ -1,0 +1,1 @@
+enum To { go, back }

@@ -1,19 +1,45 @@
 import 'dart:ui';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:spotivity/controllers/player_controller.dart';
+import 'package:spotivity/controllers/spotify_controller.dart';
 import 'package:spotivity/driver.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:spotivity/stagger_animation.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  TextEditingController textFieldController = TextEditingController();
-  DateTime dateTime = DateTime.now();
+  late AnimationController animationController;
+  late SpotifyController spotifyController;
+  late PlayerController playerController;
+  late TextEditingController textEditingController;
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.bottom]);
+    animationController = AnimationController(
+        duration: const Duration(milliseconds: 1500), vsync: this);
+    spotifyController = Get.put(SpotifyController(this));
+    playerController = Get.put(PlayerController(this));
+    textEditingController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +95,11 @@ class _HomePageState extends State<HomePage> {
               ),
             )
           ]),
-      body: Container(),
+      body: StaggerAnimation(
+          controller: animationController,
+          spotifyController: spotifyController,
+          playerController: playerController,
+          textEditingController: textEditingController),
     );
   }
 

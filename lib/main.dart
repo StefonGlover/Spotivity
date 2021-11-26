@@ -1,9 +1,17 @@
+/*
+This program was adapated from R. Dias's flutter_music_player
+
+(Source: https://github.com/rod90ad/flutter_music_player)
+*/
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:spotivity/driver.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env');
   runApp(const App());
 }
 
@@ -15,18 +23,14 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  final Future<FirebaseApp> initialization = Firebase.initializeApp();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        brightness: Brightness.dark,
-      ),
       home: Scaffold(
         body: FutureBuilder(
-          future: _initialization,
+          future: initialization,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const SomethingWentWrong();
