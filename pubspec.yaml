@@ -46,6 +46,8 @@ dependencies:
   syncfusion_flutter_gauges: ^19.3.55
   fluttericon: ^2.0.0
   flutter_dotenv: ^5.0.2
+  image_picker: ^0.8.4+4
+  firebase_storage: ^10.1.0
 
 dev_dependencies:
   flutter_test:

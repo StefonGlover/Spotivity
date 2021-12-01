@@ -1,6 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:spotivity/Helpers/authentication.dart';
+import 'package:spotivity/Helpers/validation_methods.dart';
 import 'package:spotivity/views/login_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -11,205 +18,237 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-
-  late TextEditingController _emailController,
-      _reemailController,
-      _passwordController,
-      _repasswordController,
-      _firstnameController,
-      _lastnameController;
-
   final _formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    _emailController = TextEditingController();
-    _reemailController = TextEditingController();
-    _passwordController = TextEditingController();
-    _repasswordController = TextEditingController();
-    _firstnameController = TextEditingController();
-    _lastnameController = TextEditingController();
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _reemailController.dispose();
-    _passwordController.dispose();
-    _repasswordController.dispose();
-    _firstnameController.dispose();
-    _lastnameController.dispose();
-
-    super.dispose();
-  }
+  //Controllers to catch user's inputs
+  final TextEditingController _emailField = TextEditingController();
+  final TextEditingController _passwordField = TextEditingController();
+  final TextEditingController _confirmPasswordField = TextEditingController();
+  final TextEditingController _firstNameField = TextEditingController();
+  final TextEditingController _lastNameField = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("Register"),
-        ),
-        body: Form(
-            key: _formKey,
-            child: ListView(children: [
-              const SizedBox(height: 20.0),
-              TextFormField(
-                autocorrect: false,
-                controller: _emailController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                    labelText: "EMAIL ADDRESS",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                    hintText: 'Enter Email'),
-              ),
-              const SizedBox(height: 20.0),
-              TextFormField(
-                autocorrect: false,
-                controller: _reemailController,
-                validator: (value) {
-                  if (value == null || value != _reemailController.text) {
-                    return 'Email addresses do not match';
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                    labelText: "RE ENTER EMAIL ADDRESS",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                    hintText: 'Re-Enter Email'),
-              ),
-              const SizedBox(height: 20.0),
-              TextFormField(
-                autocorrect: false,
-                controller: _passwordController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Password cannot be empty';
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                    labelText: "ENTER PASSWORD",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                    hintText: 'Enter Password'),
-              ),
-              const SizedBox(height: 20.0),
-              TextFormField(
-                autocorrect: false,
-                controller: _repasswordController,
-                validator: (value) {
-                  if (value == null || value != _passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                    labelText: "VERIFY PASSWORD",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                    hintText: 'Verify Password'),
-              ),
-              const SizedBox(height: 20.0),
-              TextFormField(
-                autocorrect: false,
-                controller: _firstnameController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Firstname cannot be empty';
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                    labelText: "ENTER FIRSTNAME",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                    hintText: 'Enter Firstname'),
-              ),
-              const SizedBox(height: 20.0),
-              TextFormField(
-                autocorrect: false,
-                controller: _lastnameController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Lastname cannot be empty';
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                    labelText: "ENTER LASTNAME",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                    hintText: 'Enter Lastname'),
-              ),
-              const SizedBox(
-                height: 30.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      textStyle: const TextStyle(fontSize: 18),
-                      side: const BorderSide(color: Colors.blue, width: 3.0),
-                    ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Completing Registration')));
+    return MaterialApp(
+      theme: ThemeData(
+          primarySwatch: Colors.blue,
+          toggleableActiveColor: Colors.black,
+          inputDecorationTheme: const InputDecorationTheme(
+              border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black),
+          )),
+          textSelectionTheme: const TextSelectionThemeData(
+            cursorColor: Colors.black,
+            selectionColor: Colors.black12,
+            selectionHandleColor: Colors.black,
+          )),
+      home: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.grey[900],
+            title: const Text('Register'),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+          body: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Center(
+                child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Text(
+                          'Create your account. It\'s free and only takes a minute!',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                       SizedBox(
+                         width: 400,
+                         child: Image.network('http://www.desicomments.com/wp-content/uploads/2017/04/Music-image.jpg'),
+                       ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your first name';
+                            }
+                          },
+                          autocorrect: false,
+                          controller: _firstNameField,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: const InputDecoration(
+                            labelText: 'First name',
+                            labelStyle: TextStyle(color: Colors.black),
+                            isDense: true,
+                            hintStyle: TextStyle(
+                              color: Colors.black,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.menu_book_outlined,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your last name';
+                            }
+                          },
+                          autocorrect: false,
+                          controller: _lastNameField,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: const InputDecoration(
+                            labelText: 'Last name',
+                            labelStyle: TextStyle(color: Colors.black),
+                            isDense: true,
+                            hintStyle: TextStyle(
+                              color: Colors.black,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.menu_book_outlined,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          validator: (value) {
+                            if (ValidationMethods().validateEmail(value!) ==
+                                false) {
+                              return 'Please enter a valid email';
+                            }
+                          },
+                          autocorrect: false,
+                          controller: _emailField,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            labelStyle: TextStyle(color: Colors.black),
+                            isDense: true,
+                            hintStyle: TextStyle(
+                              color: Colors.black,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.email,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          validator: (value) {
+                            if (ValidationMethods().isPasswordValid(value!) ==
+                                false) {
+                              return 'Password must be greater than 8 characters';
+                            }
+                          },
+                          autocorrect: false,
+                          obscureText: true,
+                          controller: _passwordField,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(color: Colors.black),
+                            isDense: true,
+                            hintStyle: TextStyle(
+                              color: Colors.black,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          validator: (value) {
+                            if (ValidationMethods().isPasswordValid(value!) ==
+                                false) {
+                              return 'Password must be greater than 8 characters';
+                            }
+                            if (!_passwordField.text
+                                .contains(_confirmPasswordField.text)) {
+                              return 'Passwords do not match';
+                            }
+                          },
+                          autocorrect: false,
+                          obscureText: true,
+                          controller: _confirmPasswordField,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: const InputDecoration(
+                            labelText: 'Confirm password',
+                            labelStyle: TextStyle(color: Colors.black),
+                            isDense: true,
+                            hintStyle: TextStyle(
+                              color: Colors.black,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                            width: MediaQuery.of(context).size.width / 1.4,
+                            height: 45,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: Colors.black),
+                            child: MaterialButton(
+                                onPressed: () async {
+                                  if (_passwordField.text
+                                      .contains(_confirmPasswordField.text)) {
+                                    if (_formKey.currentState!.validate()) {
+                                      String profilePic;
 
-                        setState(() {
-                          register();
-                        });
-                      }
-                    },
-                    child: const Text(
-                      'Register',
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                  )
-                ],
-              )
-            ])));
-  }
+                                      bool isUserValidated =
+                                          await Authentication().register(
+                                              _emailField.text,
+                                              _passwordField.text,
+                                              _firstNameField.text,
+                                              _lastNameField.text,
+                                              Timestamp.fromDate(DateTime.now()));
 
-  Future<void> register() async {
-    try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-              email: _emailController.text, password: _passwordController.text);
-
-      _db
-          .collection("users")
-          .doc(userCredential.user!.uid)
-          .set({
-            "first_name": _firstnameController.text,
-            "last_name": _lastnameController.text,
-            "registration_datetime": FieldValue.serverTimestamp()
-          })
-          .then((value) => null)
-          .onError((error, stackTrace) => null);
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Something Else")));
-    } catch (e) {
-      // ignore: avoid_print
-      print(e);
-    }
-
-    setState(() {});
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (con) => const LoginPage()));
+                                      if (isUserValidated) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                content: Text(
+                                                    'Registration successful')));
+                                        Navigator.of(context).pop();
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                content: Text(
+                                                    'Error. Email may be in use')));
+                                      }
+                                    }
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content:
+                                                Text('Passwords do not match')));
+                                  }
+                                },
+                                child: const Text(
+                                  "Sign up",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                )))
+                      ],
+                    )),
+              ),
+            ),
+          )),
+    );
   }
 }
