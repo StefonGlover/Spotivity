@@ -10,6 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 
+import '../driver.dart';
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
@@ -26,6 +28,53 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordField = TextEditingController();
   final TextEditingController _firstNameField = TextEditingController();
   final TextEditingController _lastNameField = TextEditingController();
+  /// The variable and method below allows the user to pick an image
+  /// from their gallery
+  /// @params none
+  /// returns void
+  File? _image;
+
+  Future<void> pickImage() async {
+    try {
+      final image =
+      await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+      if (image == null) {
+        return;
+      }
+
+      final imageTemporary = File(image.path);
+      setState(() {
+        _image = imageTemporary;
+      });
+    } on PlatformException catch (e) {
+      debugPrint('Failed to pick image: $e');
+    }
+  }
+
+  /// This method obtains the url of the profile pic
+  /// @params none
+  /// returns String url
+  /// This method obtains the url of the profile pic
+  /// @params none
+  /// returns String url
+  Future<String> uploadProfileImage() async {
+    try {
+      String time = DateTime.now().toString();
+      TaskSnapshot taskSnapshot = await FirebaseStorage.instance
+          .ref()
+          .child("profilePics")
+          .child(time)
+          .putFile(_image!);
+
+      return await taskSnapshot.ref.getDownloadURL();
+    } catch (e) {
+      debugPrint('Failed upload image: $e');
+
+      //Default image
+      return "https://firebasestorage.googleapis.com/v0/b/beautyfaux-things.appspot.com/o/uploadPic.jpg?alt=media&token=7eb881d6-6c91-49de-af9e-4f80102ebdfb";
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +94,15 @@ class _RegisterPageState extends State<RegisterPage> {
       home: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.grey[900],
-            title: const Text('Register'),
+            title: const  Text('Register',
+                style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.bold)),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () =>  Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (con) => AppDriver()))
+
             ),
           ),
           body: SingleChildScrollView(
@@ -68,10 +122,31 @@ class _RegisterPageState extends State<RegisterPage> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 20),
-                       SizedBox(
-                         width: 400,
-                         child: Image.network('http://www.desicomments.com/wp-content/uploads/2017/04/Music-image.jpg'),
-                       ),
+                        GestureDetector(
+                          onTap: () async {
+                            await pickImage();
+                          },
+                          child: CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.black,
+                            backgroundImage: _image != null
+                                ? FileImage(_image!) as ImageProvider
+                                : const AssetImage("images/vinyl.png"),
+                            child: Stack(children: const [
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: CircleAvatar(
+                                  radius: 18,
+                                  backgroundColor: Colors.white70,
+                                  child: Icon(
+                                    CupertinoIcons.camera,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ]),
+                          ),
+                        ),
                         const SizedBox(height: 20),
                         TextFormField(
                           validator: (value) {
@@ -216,6 +291,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                               _passwordField.text,
                                               _firstNameField.text,
                                               _lastNameField.text,
+                                             profilePic = (await uploadProfileImage()),
                                               Timestamp.fromDate(DateTime.now()));
 
                                       if (isUserValidated) {
@@ -251,4 +327,6 @@ class _RegisterPageState extends State<RegisterPage> {
           )),
     );
   }
+
+
 }

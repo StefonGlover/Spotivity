@@ -53,7 +53,7 @@ class SomethingWentWrong extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.lightBlueAccent,
+      color: Colors.grey[900],
     );
   }
 }
