@@ -46,6 +46,7 @@ class Authentication {
       String password,
       String firstName,
       String lastName,
+      String profilePic,
       Timestamp timeRegistered) async {
     try {
       await FirebaseAuth.instance
@@ -63,6 +64,7 @@ class Authentication {
           .set({
         'firstName': firstName,
         'lastName': lastName,
+        'profilePic': profilePic,
         'dateRegistered': timeRegistered,
         'uid': uid
       })
