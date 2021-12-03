@@ -48,6 +48,7 @@ class HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Spotivity',
             style: TextStyle(
                 fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
