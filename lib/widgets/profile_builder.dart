@@ -4,10 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spotivity/Helpers/validation_methods.dart';
 import 'package:spotivity/main.dart';
-
 import 'delete_account_alert.dart';
 
 class ProfileBuilder extends StatefulWidget {
+  const ProfileBuilder({Key? key}) : super(key: key);
+
   @override
   _ProfileBuilderState createState() => _ProfileBuilderState();
 }
@@ -67,7 +68,7 @@ class _ProfileBuilderState extends State<ProfileBuilder> {
                         const SizedBox(height: 8),
                         Text(
                             'Date joined: ' +
-                               data['dateRegistered']
+                                data['dateRegistered']
                                     .toDate()
                                     .toString()
                                     .substring(0, 10),
@@ -81,13 +82,11 @@ class _ProfileBuilderState extends State<ProfileBuilder> {
                             IconButton(
                                 onPressed: () async {
                                   await accountDeleteAlert(context);
-
                                 },
                                 icon: const Icon(
                                   Icons.delete,
                                   color: Colors.black,
                                 )),
-
                           ],
                         ),
                       ],
