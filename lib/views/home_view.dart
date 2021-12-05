@@ -65,9 +65,7 @@ class HomePageState extends State<HomePage>
                     style: TextStyle(color: Colors.white)),
                 actions: <Widget>[
                   TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: () => _signOut(context),
                     child: const Text(
                       'Cancel',
                       style: TextStyle(color: Colors.white),
