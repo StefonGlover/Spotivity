@@ -6,7 +6,7 @@ import 'package:spotivity/Helpers/validation_methods.dart';
 import 'package:spotivity/main.dart';
 
 import 'Login & Security/login_security.dart';
-import 'delete_account_alert.dart';
+import 'Login & Security/delete_account_alert.dart';
 
 class ProfileBuilder extends StatefulWidget {
   @override
@@ -44,31 +44,33 @@ class _ProfileBuilderState extends State<ProfileBuilder> {
             } else {
               final data = snapshot.requireData;
 
-              return Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Text(
-                            ValidationMethods().greeting(data['firstName']),
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 8),
-                          CircleAvatar(
-                            maxRadius: 70,
-                            backgroundColor: Colors.black,
-                            backgroundImage: NetworkImage(data['profilePic']),
-                          ),
-                          const SizedBox(height: 10),
-                          const LoginAndSecurity()
-                        ],
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.all(10),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Text(
+                              ValidationMethods().greeting(data['firstName']),
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            CircleAvatar(
+                              maxRadius: 70,
+                              backgroundColor: Colors.black,
+                              backgroundImage: NetworkImage(data['profilePic']),
+                            ),
+                            const SizedBox(height: 10),
+                            const LoginAndSecurity()
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }
           }),

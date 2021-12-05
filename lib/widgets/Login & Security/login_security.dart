@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spotivity/views/chat_room_view.dart';
+import 'package:spotivity/widgets/Login%20&%20Security/delete_account_alert.dart';
 import 'package:spotivity/widgets/Login%20&%20Security/reset_password.dart';
 
 class LoginAndSecurity extends StatefulWidget {
@@ -31,10 +32,10 @@ class _LoginAndSecurityState extends State<LoginAndSecurity> {
 
             return Container(
               margin: const EdgeInsets.all(10),
-              height: 350,
               child: Column(
                 children: [
                   Container(
+                    height:80,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black),
                     ),
@@ -54,6 +55,7 @@ class _LoginAndSecurityState extends State<LoginAndSecurity> {
                   ),
                   const SizedBox(height: 10),
                   Container(
+                    height:80,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black),
                     ),
@@ -73,6 +75,7 @@ class _LoginAndSecurityState extends State<LoginAndSecurity> {
                   ),
                   const SizedBox(height: 10),
                   Container(
+                    height:80,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black),
                     ),
@@ -89,20 +92,23 @@ class _LoginAndSecurityState extends State<LoginAndSecurity> {
                         ),
                         trailing: Container(
                           color: Colors.grey[900],
-                          child: TextButton(
-                              onPressed: () async {
-                                resetPasswordDialog(context);
-                              },
-                              child: const Text(
-                                'Edit',
-                                style: TextStyle(color: Colors.white),
-                              )),
+                          width: 65,
+                          child:IconButton(
+                            onPressed: () {
+                             resetPasswordDialog(context);
+                            },
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 10),
                   Container(
+                    height:80,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black),
                     ),
@@ -129,6 +135,39 @@ class _LoginAndSecurityState extends State<LoginAndSecurity> {
                             },
                             icon: const Icon(
                               Icons.chat,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height:80,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                    ),
+                    child: GestureDetector(
+                      onTap: null,
+                      child: ListTile(
+                        title: const Text(
+                          'Delete Account:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: const Text(
+                          "Permanently delete your account and all data ",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        trailing: Container(
+                          width: 65,
+                          color: Colors.grey[900],
+                          child: IconButton(
+                            onPressed: () {
+                             accountDeleteAlert(context);
+                            },
+                            icon: const Icon(
+                              Icons.delete,
                               color: Colors.white,
                             ),
                           ),
